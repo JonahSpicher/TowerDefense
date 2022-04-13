@@ -8,9 +8,9 @@
     Make Tower                              DONE
     Make Enemy shoot tower
         Both Blink                          DONE
-        Bullet animation (snall circle)
-            Shoot at original spot
-            track future position
+        Bullet animation (snall circle)     DONE
+            Shoot at original spot          DONE
+            track future position           DONE
             Tower has range
     Enemy health
         Health Bar?
@@ -78,6 +78,9 @@ while (window.isOpen())
     if (time1.asSeconds() > .02){  //condition to set fps
 
         xPosE +=4;
+        if (xPosE > winWidth){
+            xPosE = 0;
+        }
         Enemy.setPosition(sf::Vector2f(xPosE,yPosE));
 
         towershoot(Enemy,Tower,bullet,targetMove, blinktime,shooting);
@@ -99,8 +102,8 @@ while (window.isOpen())
 void towershoot(sf::RectangleShape& Enemy, sf::CircleShape& Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){    //temporary towershoot trigger
-Tower.setFillColor(sf::Color(176,213,217));
-Enemy.setFillColor(sf::Color(255,127,127));
+//Tower.setFillColor(sf::Color(176,213,217));
+//Enemy.setFillColor(sf::Color(255,127,127));
     if(!shooting){
       shooting = true;
       bullet.setPosition(Tower.getPosition());
@@ -109,9 +112,13 @@ Enemy.setFillColor(sf::Color(255,127,127));
       sf::Vector2f direction = targetLocation - bullet.getPosition();
       float dist = sqrt(pow(direction.x,2) + pow(direction.y,2));
       float scale = 15/dist; //where 15 is pixels/frame
+      blinktime = 1/scale;                            //1/scale is number of frames it will take to hit the original location (not perfect)
+      sf::Vector2f enemyspeed(4,0);                   //the speed the enemy is moving as a vector      
+      sf::Vector2f endPos = targetLocation+sf::Vector2f((1/scale)*enemyspeed.x,1/scale*enemyspeed.y);   //calculate the approximate end position of enemy   
+      direction = endPos - bullet.getPosition();            //set new direction vector to be end position                                    
       sf::Vector2f vel(scale*direction.x, scale*direction.y);
       targetMove = vel;
-      blinktime = 1/scale;
+    
     }
   }
 // if (blinktime >=5){
