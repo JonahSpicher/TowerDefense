@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include "Tower.cpp"
 /* To-Do list
     Get render window                       DONE
     Clock cycle                             DONE
@@ -11,6 +12,7 @@
         Bullet animation (snall circle)     DONE
             Shoot at original spot          DONE
             track future position           DONE
+    Okay im skipping to classifying things cause it makes more sense
             Tower has range
     Enemy health
         Health Bar?
@@ -19,7 +21,8 @@
     Tower menu
     multiple towers at once
         towershoot loops through each tower and picks target
-    **CLASSIFY towers and enemies
+    **CLASSIFY towers                     DONE
+    and enemies
     more than one enemy - tower shoots closest
     Enemy death
     Implement text files for levels
@@ -33,19 +36,20 @@
     */
 
    //Passes a Tower and an enemy target, shows bullet animation and decreases health of enemy, on a timer
-   void towershoot(sf::RectangleShape& Enemy, sf::CircleShape& Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting);  //function for tower shooting enemy
+   void towershoot(sf::RectangleShape& Enemy, nTower Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting);  //function for tower shooting enemy
 int main(){
 
 int winHeight = 600;
 int winWidth = 600;
 sf::RenderWindow window(sf::VideoMode(winWidth, winHeight), "More Lines");
 
-sf::CircleShape Tower;                      //Tower Setup
+//sf::CircleShape Tower;                      //Tower Setup  --soon handled by class
 int xPosT(winWidth/2),yPosT(winHeight/2-100);
-Tower.setFillColor(sf::Color::Blue);
-Tower.setRadius(20);
-Tower.setOrigin(20, 20);
-Tower.setPosition(xPosT,yPosT);             //position variables for tower
+// Tower.setFillColor(sf::Color::Blue);
+// Tower.setRadius(20);
+// Tower.setOrigin(20, 20);
+// Tower.setPosition(xPosT,yPosT);             //position variables for tower
+nTower Tower(xPosT, yPosT); //creating object ntower
 
 sf::RectangleShape Enemy;                   //Enemy Setup
 int xPosE(0),yPosE(winHeight/2);
@@ -87,7 +91,7 @@ while (window.isOpen())
 
         window.clear();
         window.draw(Enemy);
-        window.draw(Tower);
+        window.draw(Tower.getShape());
         window.draw(bullet);
 
         window.display();
@@ -99,7 +103,7 @@ while (window.isOpen())
 }
 
 
-void towershoot(sf::RectangleShape& Enemy, sf::CircleShape& Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting){   //Eventually this will probably loop through every tower and each will pick a target
+void towershoot(sf::RectangleShape& Enemy, nTower Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){    //temporary towershoot trigger
 //Tower.setFillColor(sf::Color(176,213,217));
