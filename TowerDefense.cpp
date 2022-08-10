@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include "Tower.cpp"
+#include "Enemy.cpp"
 /* To-Do list
     Get render window                       DONE
     Clock cycle                             DONE
@@ -36,7 +37,7 @@
     */
 
    //Passes a Tower and an enemy target, shows bullet animation and decreases health of enemy, on a timer
-   void towershoot(sf::RectangleShape& Enemy, nTower Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting);  //function for tower shooting enemy
+   void towershoot(nEnemy Enemy, nTower Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting);  //function for tower shooting enemy
 int main(){
 
 int winHeight = 600;
@@ -51,12 +52,17 @@ int xPosT(winWidth/2),yPosT(winHeight/2-100);
 // Tower.setPosition(xPosT,yPosT);             //position variables for tower
 nTower Tower(xPosT, yPosT); //creating object ntower
 
-sf::RectangleShape Enemy;                   //Enemy Setup
+
+
+
+//sf::RectangleShape Enemy;                   //Enemy Setup
 int xPosE(0),yPosE(winHeight/2);
-Enemy.setFillColor(sf::Color::Red);
-Enemy.setSize(sf::Vector2f(20,20));
-Enemy.setOrigin(10, 10);
-Enemy.setPosition(xPosE,yPosE);             //position variables for enemy
+
+nEnemy Enemy(xPosE, yPosE);
+// Enemy.setFillColor(sf::Color::Red);
+// Enemy.setSize(sf::Vector2f(20,20));
+// Enemy.setOrigin(10, 10);
+// Enemy.setPosition(xPosE,yPosE);             //position variables for enemy
 
 sf::CircleShape bullet;                      //Tower Setup
 int xPosB(1000),yPosB(1000);
@@ -90,7 +96,7 @@ while (window.isOpen())
         towershoot(Enemy,Tower,bullet,targetMove, blinktime,shooting);
 
         window.clear();
-        window.draw(Enemy);
+        window.draw(Enemy.getShape());
         window.draw(Tower.getShape());
         window.draw(bullet);
 
@@ -103,7 +109,7 @@ while (window.isOpen())
 }
 
 
-void towershoot(sf::RectangleShape& Enemy, nTower Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting){   //Eventually this will probably loop through every tower and each will pick a target
+void towershoot(nEnemy Enemy, nTower Tower, sf::CircleShape& bullet, sf::Vector2f& targetMove, int& blinktime, bool& shooting){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){    //temporary towershoot trigger
 //Tower.setFillColor(sf::Color(176,213,217));
@@ -117,12 +123,12 @@ void towershoot(sf::RectangleShape& Enemy, nTower Tower, sf::CircleShape& bullet
       float dist = sqrt(pow(direction.x,2) + pow(direction.y,2));
       float scale = 15/dist; //where 15 is pixels/frame
       blinktime = 1/scale;                            //1/scale is number of frames it will take to hit the original location (not perfect)
-      sf::Vector2f enemyspeed(4,0);                   //the speed the enemy is moving as a vector      
-      sf::Vector2f endPos = targetLocation+sf::Vector2f((1/scale)*enemyspeed.x,1/scale*enemyspeed.y);   //calculate the approximate end position of enemy   
-      direction = endPos - bullet.getPosition();            //set new direction vector to be end position                                    
+      sf::Vector2f enemyspeed(4,0);                   //the speed the enemy is moving as a vector
+      sf::Vector2f endPos = targetLocation+sf::Vector2f((1/scale)*enemyspeed.x,1/scale*enemyspeed.y);   //calculate the approximate end position of enemy
+      direction = endPos - bullet.getPosition();            //set new direction vector to be end position
       sf::Vector2f vel(scale*direction.x, scale*direction.y);
       targetMove = vel;
-    
+
     }
   }
 // if (blinktime >=5){
