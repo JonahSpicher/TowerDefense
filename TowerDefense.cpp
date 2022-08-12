@@ -14,9 +14,9 @@
             Shoot at original spot          DONE
             track future position           DONE
     Okay im skipping to classifying things cause it makes more sense
-            Tower has range
+            Tower has range                 DONE
             tower has reloadTime            DONE
-    Enemy health
+    Enemy health                             DONE
         Health Bar?                         DONE
     Add another Path
     Add tower placement
@@ -87,7 +87,7 @@ while (window.isOpen())
                 window.close();
         }
 
-    if (time1.asSeconds() > .02){  //condition to set fps
+    if (time1.asSeconds() > .01){  //condition to set fps ~60 
       /*
         xPosE +=4;
         if (xPosE > winWidth){
@@ -102,7 +102,7 @@ while (window.isOpen())
 
       //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
         towershoot(Enemy,Tower,targetMove, blinktime); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
-      
+
         window.clear();
         if(Enemy.getAlive()){
           window.draw(Enemy.getShape());
