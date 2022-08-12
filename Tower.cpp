@@ -7,6 +7,7 @@ shooting = false;
     shootSpeed = 15;
     reloadTime = 30;
     damage = 1;
+    range = 200;
 towerShape.setFillColor(sf::Color::Blue);
 towerShape.setRadius(20);
 towerShape.setOrigin(20, 20);
@@ -16,6 +17,11 @@ bullet.setFillColor(sf::Color::White); //create towers bullet
 bullet.setRadius(4);
 bullet.setOrigin(4, 4);
 bullet.setPosition(1000,1000); //temporary solution mayber
+
+rangeShape.setFillColor(sf::Color(0,255,0,70)); //create semi transparent range circle
+rangeShape.setRadius(range);
+rangeShape.setOrigin(range, range);
+rangeShape.setPosition(posX,posY); //temporary solution mayber
 }
 
 sf::CircleShape nTower::getShape(){
@@ -38,11 +44,18 @@ bool nTower::getShooting(){
 sf::CircleShape nTower::getBulletShape(){
   return bullet;
 }
+
+sf::CircleShape nTower::getRangeShape(){
+  return rangeShape;
+}
 sf::Vector2f nTower::getBulletPosition(){
   return bulletPos;
 }
 int nTower::getReloadTime(){
-  return reloadTime;
+  return currentReloadTime;
+}
+int nTower::getRange(){
+  return range;
 }
 
 
@@ -51,10 +64,12 @@ void nTower::setBulletPosition(sf::Vector2f pos){
   bulletPos = pos;
   bullet.setPosition(pos);
 }
-void nTower::setReloadTime(int rel){
-  reloadTime = rel;
+void nTower::Reload(){
+  currentReloadTime = reloadTime;
 }
-
+void nTower::setReloadTime(int rel){
+  currentReloadTime -= rel;
+}
 
 void nTower::setShooting(bool s){
     shooting = s;

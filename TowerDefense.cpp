@@ -17,7 +17,7 @@
             Tower has range
             tower has reloadTime            DONE
     Enemy health
-        Health Bar?
+        Health Bar?                         DONE
     Add another Path
     Add tower placement
     Tower menu
@@ -26,7 +26,7 @@
     **CLASSIFY towers                     DONE
     and enemies                           DONE!
     more than one enemy - tower shoots closest
-    Enemy death
+    Enemy death                           DONE
     Implement text files for levels
         Routes, turns, number of
         enemies and type
@@ -38,6 +38,7 @@
     */
 
    //Passes a Tower and an enemy target, shows bullet animation and decreases health of enemy, on a timer. should bullet be a property of the tower?
+   //void drawScreen(nEnemy& enemy, nTower& tower); //function call to handle updating and drawing objects on the screen I actually dont know if this is better
    void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& blinktime);  //function for tower shooting enemy
 int main(){
 
@@ -96,14 +97,19 @@ while (window.isOpen())
 */ //should be replaced by move function
         Enemy.move();  //wow so clean
         if(Tower.getReloadTime()>=1){
-        Tower.setReloadTime(Tower.getReloadTime()-1);
+        Tower.setReloadTime(1);  //decrements reloadtime by 1
       }
 
       //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
         towershoot(Enemy,Tower,targetMove, blinktime); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
 
         window.clear();
-        window.draw(Enemy.getShape());
+        if(Enemy.getAlive()){
+          window.draw(Enemy.getShape());
+          window.draw(Enemy.getHealthBarShape());
+        }
+        
+        window.draw(Tower.getRangeShape());
         window.draw(Tower.getShape());
         window.draw(Tower.getBulletShape());
 
@@ -123,21 +129,24 @@ void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& bli
 //Tower.setFillColor(sf::Color(176,213,217));
 //Enemy.setFillColor(sf::Color(255,127,127));
     if(!tower.getShooting()){
-      tower.setShooting(true);
-      tower.setReloadTime(30);//only sets reload time when you begin a shooting
-      tower.setBulletPosition(tower.getPosition()); //put bullet at tower position
       sf::Vector2f targetLocation = enemy.getPosition(); //for now, just where the enemy is
 
-      sf::Vector2f direction = targetLocation - tower.getBulletPosition();
-      float dist = sqrt(pow(direction.x,2) + pow(direction.y,2));
-      float scale = tower.getShootSpeed()/dist; //where getShootSpeed is pixels/frame
-      blinktime = 1/scale;                            //1/scale is number of frames it will take to hit the original location (not perfect)
-    //  sf::Vector2f enemyspeed(4,0);                   //the speed the enemy is moving as a vector, should be enemy property - now it is yay
-      sf::Vector2f endPos = targetLocation+sf::Vector2f((1/scale)*enemy.getVelocity().x,1/scale*enemy.getVelocity().y);   //calculate the approximate end position of enemy
-      direction = endPos - tower.getBulletPosition();            //set new direction vector to be end position
-      sf::Vector2f vel(scale*direction.x, scale*direction.y);
-      targetMove = vel;
+      sf::Vector2f direction = targetLocation - tower.getPosition();
+      float dist = sqrt(pow(direction.x,2) + pow(direction.y,2)); // gets distnace between tower and target
+    //  std::cout << dist << std::endl;
+      if(dist <= tower.getRange()){ //only shoots if distance is below range
+        tower.setShooting(true);
+        tower.Reload();//only resets reload time when you first shoot
+        tower.setBulletPosition(tower.getPosition()); //put bullet at tower position
 
+        float scale = tower.getShootSpeed()/dist; //where getShootSpeed is pixels/frame
+        blinktime = 1/scale;                            //1/scale is number of frames it will take to hit the original location (not perfect)
+        //  sf::Vector2f enemyspeed(4,0);                   //the speed the enemy is moving as a vector, should be enemy property - now it is yay
+        sf::Vector2f endPos = targetLocation+sf::Vector2f((1/scale)*enemy.getVelocity().x,1/scale*enemy.getVelocity().y);   //calculate the approximate end position of enemy
+        direction = endPos - tower.getBulletPosition();            //set new direction vector to be end position
+        sf::Vector2f vel(scale*direction.x, scale*direction.y);
+        targetMove = vel;
+      }
     }
   }
 // if (blinktime >=5){
@@ -158,3 +167,12 @@ if (tower.getShooting()){ //bullet is currently moving
 }
 
 }
+/*
+void drawScreen(nEnemy& enemy, nTower& tower){ //function call to handle updating and drawing objects on the screen
+  window.clear();
+  window.draw(enemy.getShape());
+  window.draw(enemy.getHealthBarShape());
+  window.draw(tower.getShape());
+  window.draw(tower.getBulletShape());
+}
+*/
