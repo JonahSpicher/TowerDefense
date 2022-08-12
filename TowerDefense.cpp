@@ -102,13 +102,13 @@ while (window.isOpen())
 
       //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
         towershoot(Enemy,Tower,targetMove, blinktime); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
-
+      
         window.clear();
         if(Enemy.getAlive()){
           window.draw(Enemy.getShape());
           window.draw(Enemy.getHealthBarShape());
         }
-        
+
         window.draw(Tower.getRangeShape());
         window.draw(Tower.getShape());
         window.draw(Tower.getBulletShape());
@@ -124,8 +124,8 @@ while (window.isOpen())
 
 void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& blinktime){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && tower.getReloadTime()<=0){    //temporary towershoot trigger
-
+  if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
+//sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
 //Tower.setFillColor(sf::Color(176,213,217));
 //Enemy.setFillColor(sf::Color(255,127,127));
     if(!tower.getShooting()){

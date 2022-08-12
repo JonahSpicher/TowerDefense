@@ -15,7 +15,7 @@ nEnemy::nEnemy(int posX, int posY){
     enemyHealthBar.setFillColor(sf::Color::Green);
     enemyHealthBar.setSize(sf::Vector2f(20,5));
   //  enemyHealthBar.setOrigin(10, 10);    Origin should be top left so we can make it smaller easier?
-    enemyHealthBar.setPosition(posX-10,posY-15); //probably should streamline this a bit
+    enemyHealthBar.setPosition(posX-10,posY-20); //probably should streamline this a bit
 }
 
 void nEnemy::move(){
@@ -24,7 +24,7 @@ void nEnemy::move(){
     position.x = 0;
   }
   enemyShape.setPosition(position);
-  enemyHealthBar.setPosition(position.x-10,position.y-20); //not ideal but sets health bar about the enemy
+  enemyHealthBar.setPosition(position.x-10,position.y-20); //not ideal but sets health bar above the enemy
 }
 
 void nEnemy::takeDamage(int damage){ //takes in damage variable from tower
@@ -38,8 +38,10 @@ void nEnemy::takeDamage(int damage){ //takes in damage variable from tower
 
 void nEnemy::die(){
   isAlive = false;
-  enemyShape.setFillColor(sf::Color::Black); //probably should do more things
+  //enemyShape.setFillColor(sf::Color::Black); //probably should do more things
+  setPosition(sf::Vector2f(1000,1000));
   velocity = sf::Vector2f(0,0);
+  //move();
 }
 
 sf::RectangleShape nEnemy::getShape(){
@@ -58,7 +60,7 @@ sf::Vector2f nEnemy::getVelocity(){
 bool nEnemy::getAlive(){
     return isAlive;
 }
-void nEnemy::setPosition(sf::Vector2f newLoc){ //sets enemy position based on Vector input parameter
+void nEnemy::setPosition(sf::Vector2f newLoc){ //sets enemy position based on Vector2f input parameter
     position.x = newLoc.x;
     position.y = newLoc.y;
     enemyShape.setPosition(newLoc.x, newLoc.y);
