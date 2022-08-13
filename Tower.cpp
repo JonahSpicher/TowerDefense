@@ -51,18 +51,27 @@ sf::CircleShape nTower::getRangeShape(){
 sf::Vector2f nTower::getBulletPosition(){
   return bulletPos;
 }
+sf::Vector2f nTower::getBulletVel(){
+  return bulletVel;
+}
 int nTower::getReloadTime(){
   return currentReloadTime;
 }
 int nTower::getRange(){
   return range;
 }
-
+int nTower::getShootTime(){
+  return shootTime;
+}
 
 
 void nTower::setBulletPosition(sf::Vector2f pos){
   bulletPos = pos;
   bullet.setPosition(pos);
+}
+void nTower::setBulletVel(sf::Vector2f vel){
+  bulletVel = vel;
+
 }
 void nTower::Reload(){
   currentReloadTime = reloadTime;
@@ -73,4 +82,11 @@ void nTower::setReloadTime(int rel){
 
 void nTower::setShooting(bool s){
     shooting = s;
+}
+void nTower::setShootTime(int s){
+    shootTime = s;
+}
+void nTower::moveBullet(){
+    bulletPos = sf::Vector2f(bulletPos.x+bulletVel.x,bulletPos.y+bulletVel.y) ;
+    bullet.setPosition(bulletPos);
 }

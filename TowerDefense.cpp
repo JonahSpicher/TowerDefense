@@ -40,81 +40,85 @@
 
    //Passes a Tower and an enemy target, shows bullet animation and decreases health of enemy, on a timer. should bullet be a property of the tower?
    //void drawScreen(nEnemy& enemy, nTower& tower); //function call to handle updating and drawing objects on the screen I actually dont know if this is better
-   void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& blinktime);  //function for tower shooting enemy
+   void towershoot(nEnemy& enemy, nTower& tower);  //function for tower shooting enemy
+   void addEnemy(std::vector<nEnemy>& Enemy, int& enemyNum);
 int main(){
 
 int winHeight = 600;
 int winWidth = 600;
+sf::Vector2i mousePos;
+
 sf::RenderWindow window(sf::VideoMode(winWidth, winHeight), "More Lines");
 
 //sf::CircleShape Tower;                      //Tower Setup  --soon handled by class --woo
 int xPosT(winWidth/2),yPosT(winHeight/2-100); //starting tower position
-// Tower.setFillColor(sf::Color::Blue);
-// Tower.setRadius(20);
-// Tower.setOrigin(20, 20);
-// Tower.setPosition(xPosT,yPosT);             //position variables for tower
-nTower Tower(xPosT, yPosT); //creating object ntower
+  std::vector<nTower> Tower;
+//nTower Tower(xPosT, yPosT); //creating vector tower
+Tower.push_back(nTower(xPosT, yPosT)); //add one tower to the vector
 
 
 
 
 //sf::RectangleShape Enemy;                   //Enemy Setup
+int enemyNum(0);
 int xPosE(0),yPosE(winHeight/2);
 std::vector<nEnemy> Enemy;
-Enemy.push_back(nEnemy(xPosE, yPosE+10));
-//nEnemy Enemy(xPosE, yPosE);
-// Enemy.setFillColor(sf::Color::Red);
-// Enemy.setSize(sf::Vector2f(20,20));
-// Enemy.setOrigin(10, 10);
-// Enemy.setPosition(xPosE,yPosE);             //position variables for enemy
-/*
-sf::CircleShape bullet;                      //Bullet Setup now in Tower Class
-int xPosB(1000),yPosB(1000);
-bullet.setFillColor(sf::Color::White);
-bullet.setRadius(4);
-bullet.setOrigin(4, 4);
-bullet.setPosition(xPosB,yPosB);
-*/
+Enemy.push_back(nEnemy(xPosE, yPosE+10)); //add one enemy to the vector
+enemyNum+=1;
 int blinktime(0);
-//bool shooting(0); //if a tower is shooting, is now a tower property
+
 sf::Vector2f targetMove(0,0); //?
-    sf::Clock clock;                        //Clock object for frames
+    sf::Clock clock;
+    window.setFramerateLimit(0);                 //Clock object for frames
 
 while (window.isOpen())
 {
         sf::Time time1 = clock.getElapsedTime();  //time for measuring elapsed times
         sf::Event event;
+
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-    if (time1.asSeconds() > .01){  //condition to set fps ~60
+    if (time1.asSeconds() >= .01){  //condition to set fps ~60
       /*
         xPosE +=4;
         if (xPosE > winWidth){
             xPosE = 0;
         }
         Enemy.setPosition(sf::Vector2f(xPosE,yPosE));
-*/ //should be replaced by move function
-        Enemy[0].move();  //wow so clean
-        if(Tower.getReloadTime()>=1){
-        Tower.setReloadTime(1);  //decrements reloadtime by 1
+*/
+/*
+if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+    mousePos = sf::Mouse::getPosition(window);
+    //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
+    Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
+    enemyNum += 1;
+    std::cout << enemyNum << std::endl;
+  }
+  */
+    for (int i =0; i< enemyNum; i++ ){  //for loop for every enemy
+        Enemy[i].move();  //wow so clean
+      }
+        if(Tower[0].getReloadTime()>=1){
+        Tower[0].setReloadTime(1);  //decrements reloadtime by 1
       }
 
       //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
-        towershoot(Enemy[0],Tower,targetMove, blinktime); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
+        towershoot(Enemy[0],Tower[0]); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
 
         window.clear();
-        if(Enemy[0].getAlive()){
-          window.draw(Enemy[0].getShape());
-          window.draw(Enemy[0].getHealthBarShape());
+      for (int i =0; i< enemyNum; i++ ){
+        if(Enemy[i].getAlive()){
+          window.draw(Enemy[i].getShape());
+          window.draw(Enemy[i].getHealthBarShape());
 
         }
-        window.draw(Enemy[0].getShape());
-        window.draw(Tower.getRangeShape());
-        window.draw(Tower.getShape());
-        window.draw(Tower.getBulletShape());
+      }
+        window.draw(Tower[0].getRangeShape());
+        window.draw(Tower[0].getShape());
+        window.draw(Tower[0].getBulletShape());
 
         window.display();
 
@@ -124,8 +128,10 @@ while (window.isOpen())
       return 0;
 }
 
+void addEnemy(std::vector<nEnemy>& Enemy, int& enemyNum){
 
-void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& blinktime){   //Eventually this will probably loop through every tower and each will pick a target
+}
+void towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
   if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
 //sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
@@ -143,12 +149,12 @@ void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& bli
         tower.setBulletPosition(tower.getPosition()); //put bullet at tower position
 
         float scale = tower.getShootSpeed()/dist; //where getShootSpeed is pixels/frame
-        blinktime = 1/scale;                            //1/scale is number of frames it will take to hit the original location (not perfect)
+        tower.setShootTime(1/scale);           //1/scale is number of frames it will take to hit the original location (not perfect)
         //  sf::Vector2f enemyspeed(4,0);                   //the speed the enemy is moving as a vector, should be enemy property - now it is yay
         sf::Vector2f endPos = targetLocation+sf::Vector2f((1/scale)*enemy.getVelocity().x,1/scale*enemy.getVelocity().y);   //calculate the approximate end position of enemy
         direction = endPos - tower.getBulletPosition();            //set new direction vector to be end position
         sf::Vector2f vel(scale*direction.x, scale*direction.y);
-        targetMove = vel;
+        tower.setBulletVel(vel);     //set bullet velocity towards the enemys end location
       }
     }
   }
@@ -159,10 +165,10 @@ void towershoot(nEnemy& enemy, nTower& tower, sf::Vector2f& targetMove, int& bli
 // }
 
 
-if (tower.getShooting()){ //bullet is currently moving
-  tower.setBulletPosition(sf::Vector2f(tower.getBulletPosition().x+targetMove.x, tower.getBulletPosition().y+targetMove.y));
-  blinktime--;
-  if (blinktime == 0){ //bullet has hit the enemy
+if (tower.getShooting()){ //bullet is currently moving, continue to move bullet
+  tower.moveBullet(); //moves bullet by bulletVelocity
+  tower.setShootTime(tower.getShootTime()-1); //number of frames the bullet will take to hit the target goes down by one
+  if (tower.getShootTime() == 0){ //bullet has hit the enemy
     tower.setBulletPosition(sf::Vector2f(1000, 1000));
     tower.setShooting(false);
     enemy.takeDamage(tower.getDamage());
@@ -170,6 +176,8 @@ if (tower.getShooting()){ //bullet is currently moving
 }
 
 }
+
+
 /*
 void drawScreen(nEnemy& enemy, nTower& tower){ //function call to handle updating and drawing objects on the screen
   window.clear();
