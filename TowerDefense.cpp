@@ -13,6 +13,7 @@
         Bullet animation (snall circle)     DONE
             Shoot at original spot          DONE
             track future position           DONE
+            also just shoot at current position   DONE
     Okay im skipping to classifying things cause it makes more sense
             Tower has range                 DONE
             tower has reloadTime            DONE
@@ -59,8 +60,9 @@ nTower Tower(xPosT, yPosT); //creating object ntower
 
 //sf::RectangleShape Enemy;                   //Enemy Setup
 int xPosE(0),yPosE(winHeight/2);
-
-nEnemy Enemy(xPosE, yPosE);
+std::vector<nEnemy> Enemy;
+Enemy.push_back(nEnemy(xPosE, yPosE+10));
+//nEnemy Enemy(xPosE, yPosE);
 // Enemy.setFillColor(sf::Color::Red);
 // Enemy.setSize(sf::Vector2f(20,20));
 // Enemy.setOrigin(10, 10);
@@ -87,7 +89,7 @@ while (window.isOpen())
                 window.close();
         }
 
-    if (time1.asSeconds() > .01){  //condition to set fps ~60 
+    if (time1.asSeconds() > .01){  //condition to set fps ~60
       /*
         xPosE +=4;
         if (xPosE > winWidth){
@@ -95,20 +97,21 @@ while (window.isOpen())
         }
         Enemy.setPosition(sf::Vector2f(xPosE,yPosE));
 */ //should be replaced by move function
-        Enemy.move();  //wow so clean
+        Enemy[0].move();  //wow so clean
         if(Tower.getReloadTime()>=1){
         Tower.setReloadTime(1);  //decrements reloadtime by 1
       }
 
       //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
-        towershoot(Enemy,Tower,targetMove, blinktime); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
+        towershoot(Enemy[0],Tower,targetMove, blinktime); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
 
         window.clear();
-        if(Enemy.getAlive()){
-          window.draw(Enemy.getShape());
-          window.draw(Enemy.getHealthBarShape());
-        }
+        if(Enemy[0].getAlive()){
+          window.draw(Enemy[0].getShape());
+          window.draw(Enemy[0].getHealthBarShape());
 
+        }
+        window.draw(Enemy[0].getShape());
         window.draw(Tower.getRangeShape());
         window.draw(Tower.getShape());
         window.draw(Tower.getBulletShape());
