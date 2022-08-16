@@ -24,7 +24,7 @@ public:
     int getHealth();
     bool getAlive();
     void setPosition(sf::Vector2f newLoc);
-    void takeDamage(int damage);//takes in damage from tower and subtracts from health, calls die function if health is 0
+    bool takeDamage(int damage);//takes in damage from tower and subtracts from health, calls die function if health is 0
     void die();
 
 

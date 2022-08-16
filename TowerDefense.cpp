@@ -24,7 +24,7 @@
     Add tower placement
     Tower menu
     multiple towers at once
-        towershoot loops through each tower and picks target
+        towershoot loops through each tower and picks target  DONE
     **CLASSIFY towers                     DONE
     and enemies                           DONE!
     more than one enemy - tower shoots closest DONE
@@ -37,6 +37,13 @@
     Different enemie and tower types
     Upgrades
 
+
+
+  BUGS:
+    Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target
+    Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
+    Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
+
     */
 
    //Passes a Tower and an enemy target, shows bullet animation and decreases health of enemy, on a timer. should bullet be a property of the tower?
@@ -44,8 +51,8 @@
 enum gameState{Menu, Game, Exit};
 void MenuLoop(sf::RenderWindow& win, gameState&  state);
 void gameLoop(sf::RenderWindow& window, gameState& state);
-   void towershoot(nEnemy& enemy, nTower& tower);  //function for tower shooting enemy
-   void addEnemy(std::vector<nEnemy>& Enemy, int& enemyNum);
+   bool towershoot(nEnemy& enemy, nTower& tower);  //function for tower shooting enemy
+   void addEnemy(std::vector<nEnemy>& Enemy);
 
 
 
@@ -60,6 +67,7 @@ sf::RenderWindow _window(sf::VideoMode(winWidth, winHeight), "More Lines");
 
     _window.setFramerateLimit(60);                 //keeps framerate at 60
     while(!quit){
+
       switch (state){
           case Menu: {
             MenuLoop(_window,state);
@@ -110,11 +118,9 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
 
   //sf::RectangleShape Enemy;                   //Enemy Setup
-  int enemyNum(0);
   int xPosE(0),yPosE(300);   //enemy initial position
   std::vector<nEnemy> Enemy;
   Enemy.push_back(nEnemy(xPosE, yPosE+10)); //add one enemy to the vector
-  enemyNum+=1;
 
 
 
@@ -130,9 +136,10 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           sf::Event event;
 
           while (window.pollEvent(event)) {
-              if (event.type == sf::Event::Closed)
+              if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
                   window.close();
                   state = Exit;
+
 
           }
 
@@ -144,15 +151,14 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
             mousePos = sf::Mouse::getPosition(window);
             //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
             Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
-            enemyNum += 1;
-            std::cout << enemyNum << std::endl;
+            std::cout << Enemy.size() << std::endl;
             mouseDown = true;
           }
 
         }
         else{mouseDown = false;} //Ok its ok to spawn now
 
-        for (int i =0; i< enemyNum; i++ ){  //for loop for every enemy
+        for (int i =0; i< Enemy.size(); i++ ){  //for loop for every enemy
             Enemy[i].move();  //wow so clean
           }
         if(Tower[0].getReloadTime()>=1){
@@ -162,15 +168,25 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
         //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
 
         for(int i=0; i<Tower.size(); i++){ //For each tower:
-          //Tower[i].setTargetMode(1); //Optional, shoot closest instead of Oldest 
+          //Tower[i].setTargetMode(1); //Optional, shoot closest instead of Oldest
+
           int target = Tower[i].findTarget(Enemy); //Figure out which one you should shoot
+          //std::cout << "Made it" << std::endl;
           if(target>=0){
-            towershoot(Enemy[target],Tower[i]); //Shoot it
+            bool death = towershoot(Enemy[target],Tower[i]); //Shoot it
+            if(death){
+              std::cout << "Fired at:" << std::endl;
+              std::cout << target << std::endl;
+              Enemy.erase(Enemy.begin()+target);
+
+              std::cout << Enemy.size() << std::endl;
+            }
           }
         }
 
           window.clear();
-        for (int i =0; i< enemyNum; i++ ){
+        for (int i =0; i< Enemy.size(); i++ ){
+
           if(Enemy[i].getAlive()){
             window.draw(Enemy[i].getShape());
             window.draw(Enemy[i].getHealthBarShape());
@@ -189,11 +205,11 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 }
 
 
-void addEnemy(std::vector<nEnemy>& Enemy, int& enemyNum){
+void addEnemy(std::vector<nEnemy>& Enemy){
 
 }
 
-void towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target
+bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
   if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
 //sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
@@ -229,8 +245,11 @@ if (tower.getShooting()){ //bullet is currently moving, continue to move bullet
   if (tower.getShootTime() == 0){ //bullet has hit the enemy
     tower.setBulletPosition(sf::Vector2f(1000, 1000));
     tower.setShooting(false);
-    enemy.takeDamage(tower.getDamage());
+    bool death = enemy.takeDamage(tower.getDamage());
+
+    return death;
   }
 }
+return false;
 
 }

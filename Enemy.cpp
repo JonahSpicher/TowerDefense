@@ -27,17 +27,20 @@ void nEnemy::move(){
   enemyHealthBar.setPosition(position.x-10,position.y-20); //not ideal but sets health bar above the enemy
 }
 
-void nEnemy::takeDamage(int damage){ //takes in damage variable from tower
+bool nEnemy::takeDamage(int damage){ //takes in damage variable from tower
   enemyHealthBar.setSize(sf::Vector2f((health*2)-2,5)); //when health changes based on enemy type this will not work right
   health -= damage;
 
   if (health <=0){
     die();
+    return true;
   }
+  return false;
 }
 
 void nEnemy::die(){
   isAlive = false;
+  
   //enemyShape.setFillColor(sf::Color::Black); //probably should do more things
   setPosition(sf::Vector2f(1000,1000));
   velocity = sf::Vector2f(0,0);

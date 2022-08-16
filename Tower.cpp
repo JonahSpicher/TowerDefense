@@ -110,10 +110,12 @@ int nTower::findDistance(nEnemy target){
 }
 
 int nTower::findTarget(std::vector<nEnemy> enemies){
+
   switch(targetMode){
     case 0: {//target enemy that showed up first
       //stuff
       int numEnemies = enemies.size();
+      if (numEnemies == 0) {return -1;}
       int i = 0;
       while(!enemies[i].getAlive() || findDistance(enemies[i]) > range){
         i++;
