@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include "Tower.cpp"
-#include "Enemy.cpp"
+//#include "Enemy.cpp"
 /* To-Do list
     Get render window                       DONE
     Clock cycle                             DONE

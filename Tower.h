@@ -1,8 +1,10 @@
+#ifndef TOWER_H
+#define TOWER_H
 #include <iostream>
 #include <SFML/Graphics.hpp>
-// #include "Enemy.cpp"
+ #include "Enemy.h"
 
-class nEnemy;
+//class nEnemy;
 
 class nTower
 {
@@ -51,3 +53,4 @@ public:
     int findTarget(std::vector<nEnemy> enemies); //Given enemies, returns index of chosen target
     int findDistance(nEnemy target); //Checks how far away an enemy is
 };
+#endif

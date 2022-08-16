@@ -1,3 +1,5 @@
+#ifndef ENEMY_H
+#define ENEMY_H
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
@@ -27,3 +29,4 @@ public:
 
 
 };
+#endif
