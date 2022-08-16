@@ -50,7 +50,6 @@ sf::Vector2i mousePos;
 
 sf::RenderWindow window(sf::VideoMode(winWidth, winHeight), "More Lines");
 
-//sf::CircleShape Tower;                      //Tower Setup  --soon handled by class --woo
 int xPosT(winWidth/2),yPosT(winHeight/2-100); //starting tower position
   std::vector<nTower> Tower;
 //nTower Tower(xPosT, yPosT); //creating vector tower
@@ -66,6 +65,11 @@ std::vector<nEnemy> Enemy;
 Enemy.push_back(nEnemy(xPosE, yPosE+10)); //add one enemy to the vector
 enemyNum+=1;
 int blinktime(0);
+
+
+
+//temporary stuff
+bool mouseDown = false; //Just using to stop spawning so many enemies
 
 sf::Vector2f targetMove(0,0); //?
     sf::Clock clock;
@@ -89,21 +93,26 @@ while (window.isOpen())
         }
         Enemy.setPosition(sf::Vector2f(xPosE,yPosE));
 */
-/*
-if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
-    mousePos = sf::Mouse::getPosition(window);
-    //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
-    Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
-    enemyNum += 1;
-    std::cout << enemyNum << std::endl;
-  }
-  */
-    for (int i =0; i< enemyNum; i++ ){  //for loop for every enemy
-        Enemy[i].move();  //wow so clean
+
+      if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+        if (!mouseDown){ //don't spam enemies
+          mousePos = sf::Mouse::getPosition(window);
+          //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
+          Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
+          enemyNum += 1;
+          std::cout << enemyNum << std::endl;
+          mouseDown = true;
+        }
+
       }
-        if(Tower[0].getReloadTime()>=1){
-        Tower[0].setReloadTime(1);  //decrements reloadtime by 1
-      }
+      else{mouseDown = false;} //Ok its ok to spawn now
+
+      for (int i =0; i< enemyNum; i++ ){  //for loop for every enemy
+          Enemy[i].move();  //wow so clean
+        }
+      if(Tower[0].getReloadTime()>=1){
+          Tower[0].setReloadTime(1);  //decrements reloadtime by 1
+        }
 
       //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
         towershoot(Enemy[0],Tower[0]); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots

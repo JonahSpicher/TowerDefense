@@ -1,4 +1,7 @@
 #include "Tower.h"
+#include <cmath>
+#include "Enemy.cpp"
+
 nTower::nTower(int posX, int posY){
     position.x = posX;
     position.y = posY;
@@ -8,6 +11,7 @@ shooting = false;
     reloadTime = 30;
     damage = 1;
     range = 200;
+    targetMode = 0;
 towerShape.setFillColor(sf::Color::Blue);
 towerShape.setRadius(20);
 towerShape.setOrigin(20, 20);
@@ -64,6 +68,10 @@ int nTower::getShootTime(){
   return shootTime;
 }
 
+int nTower::getTargetMode(){
+  return targetMode;
+}
+
 
 void nTower::setBulletPosition(sf::Vector2f pos){
   bulletPos = pos;
@@ -89,4 +97,39 @@ void nTower::setShootTime(int s){
 void nTower::moveBullet(){
     bulletPos = sf::Vector2f(bulletPos.x+bulletVel.x,bulletPos.y+bulletVel.y) ;
     bullet.setPosition(bulletPos);
+}
+
+void nTower::setTargetMode(int tm){
+    targetMode = tm;
+}
+
+int nTower::findDistance(nEnemy target){
+  sf::Vector2f ePos = target.getPosition();
+  int dist = sqrt(pow(ePos.x - position.x,2) + pow(ePos.y - position.y,2));
+  return dist;
+}
+
+int nTower::findTarget(std::vector<nEnemy> enemies){
+  switch(targetMode){
+    case 0: {//target enemy that showed up first
+      //stuff
+      int numEnemies = enemies.size();
+      int i = 0;
+      while(!enemies[i].getAlive() || findDistance(enemies[i]) > range){
+        i++;
+        if(i == numEnemies){
+          i = -1; //signal that nothing was found
+          break; //stop looking before we escape the array
+        }
+      }
+      return i;
+      break;
+    }
+    default:{
+      //placeholder, not sure what behavior, doesn't really matter
+      return 0;
+    }
+
+  }
+
 }

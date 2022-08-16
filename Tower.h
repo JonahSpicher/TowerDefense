@@ -1,6 +1,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+// #include "Enemy.cpp"
 
+class nEnemy;
 
 class nTower
 {
@@ -11,6 +13,7 @@ private:   //all variables that are characteristics of the towers
     int damage;
     int shootTime; //time in frames it takes the bullet to hit the target
     int range;  //radius of circle rangeShape is set to and tower can shoot at
+    int targetMode; //How tower targets
 
     sf::Vector2f position; //position for tower
     sf::Vector2f bulletPos; //position for bullet
@@ -34,12 +37,17 @@ public:
     int getRange();
     int getShootTime();
     bool getShooting();
+    int getTargetMode();
 
-    void Reload(); //sets current reload time to tower reloadTime
     void setReloadTime(int rel); //decrements reload time by rel
     void setBulletPosition(sf::Vector2f pos);
     void moveBullet();  //moves bullet based on current bullet velocitiy
       void setBulletVel(sf::Vector2f vel);
     void setShooting(bool s);
     void setShootTime(int s);
+    void setTargetMode(int tm);
+
+    void Reload(); //sets current reload time to tower reloadTime
+    int findTarget(std::vector<nEnemy> enemies); //Given enemies, returns index of chosen target
+    int findDistance(nEnemy target); //Checks how far away an enemy is
 };
