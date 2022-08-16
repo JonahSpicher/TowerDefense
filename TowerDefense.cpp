@@ -27,7 +27,7 @@
         towershoot loops through each tower and picks target
     **CLASSIFY towers                     DONE
     and enemies                           DONE!
-    more than one enemy - tower shoots closest
+    more than one enemy - tower shoots closest DONE
     Enemy death                           DONE
     Implement text files for levels
         Routes, turns, number of
@@ -122,7 +122,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
   sf::Vector2i mousePos;
   bool mouseDown = false; //Just using to stop spawning so many enemies
 
-      sf::Clock clock;
+  sf::Clock clock;
 
   while (window.isOpen())
   {
@@ -160,7 +160,14 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           }
 
         //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
-          towershoot(Enemy[0],Tower[0]); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
+
+        for(int i=0; i<Tower.size(); i++){ //For each tower:
+          //Tower[i].setTargetMode(1); //Optional, shoot closest instead of Oldest 
+          int target = Tower[i].findTarget(Enemy); //Figure out which one you should shoot
+          if(target>=0){
+            towershoot(Enemy[target],Tower[i]); //Shoot it
+          }
+        }
 
           window.clear();
         for (int i =0; i< enemyNum; i++ ){

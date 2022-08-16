@@ -125,6 +125,20 @@ int nTower::findTarget(std::vector<nEnemy> enemies){
       return i;
       break;
     }
+    case 1: { //Shoot the enemy thats closest to the tower
+      int numEnemies = enemies.size();
+      int smallestDist = 10000;
+      int closest = 0;
+      for (int i=0; i<numEnemies; i++){
+        int dist = findDistance(enemies[i]);
+        if (dist < range && dist < smallestDist){
+          closest = i;
+          smallestDist = dist;
+        }
+      }
+      if (smallestDist == 10000){return -1;}
+      else{return closest;}
+    }
     default:{
       //placeholder, not sure what behavior, doesn't really matter
       return 0;
