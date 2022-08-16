@@ -130,7 +130,7 @@ while (window.isOpen())
         window.draw(Tower[0].getBulletShape());
 
         window.display();
-
+        std::cout << time1.asMilliseconds() << std::endl;
         clock.restart();
     }
 }
