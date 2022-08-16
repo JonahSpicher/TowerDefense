@@ -1,7 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-#include "Tower.cpp"
+#include "Tower.h"
+#include "Enemy.h"
 //#include "Enemy.cpp"
 /* To-Do list
     Get render window                       DONE
@@ -39,114 +40,159 @@
     */
 
    //Passes a Tower and an enemy target, shows bullet animation and decreases health of enemy, on a timer. should bullet be a property of the tower?
-   //void drawScreen(nEnemy& enemy, nTower& tower); //function call to handle updating and drawing objects on the screen I actually dont know if this is better
+
+enum gameState{Menu, Game, Exit};
+void MenuLoop(sf::RenderWindow& win, gameState&  state);
+void gameLoop(sf::RenderWindow& window, gameState& state);
    void towershoot(nEnemy& enemy, nTower& tower);  //function for tower shooting enemy
    void addEnemy(std::vector<nEnemy>& Enemy, int& enemyNum);
+
+
+
 int main(){
+gameState state = Menu; //start with menu
 
 int winHeight = 600;
 int winWidth = 600;
-sf::Vector2i mousePos;
 
-sf::RenderWindow window(sf::VideoMode(winWidth, winHeight), "More Lines");
+bool quit = false;
+sf::RenderWindow _window(sf::VideoMode(winWidth, winHeight), "More Lines");
 
-int xPosT(winWidth/2),yPosT(winHeight/2-100); //starting tower position
-  std::vector<nTower> Tower;
-//nTower Tower(xPosT, yPosT); //creating vector tower
-Tower.push_back(nTower(xPosT, yPosT)); //add one tower to the vector
-
-
-
-
-//sf::RectangleShape Enemy;                   //Enemy Setup
-int enemyNum(0);
-int xPosE(0),yPosE(winHeight/2);
-std::vector<nEnemy> Enemy;
-Enemy.push_back(nEnemy(xPosE, yPosE+10)); //add one enemy to the vector
-enemyNum+=1;
-int blinktime(0);
-
-
-
-//temporary stuff
-bool mouseDown = false; //Just using to stop spawning so many enemies
-
-sf::Vector2f targetMove(0,0); //?
-    sf::Clock clock;
-    window.setFramerateLimit(0);                 //Clock object for frames
-
-while (window.isOpen())
-{
-        sf::Time time1 = clock.getElapsedTime();  //time for measuring elapsed times
-        sf::Event event;
-
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-    if (time1.asSeconds() >= .01){  //condition to set fps ~60
-      /*
-        xPosE +=4;
-        if (xPosE > winWidth){
-            xPosE = 0;
-        }
-        Enemy.setPosition(sf::Vector2f(xPosE,yPosE));
-*/
-
-      if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
-        if (!mouseDown){ //don't spam enemies
-          mousePos = sf::Mouse::getPosition(window);
-          //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
-          Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
-          enemyNum += 1;
-          std::cout << enemyNum << std::endl;
-          mouseDown = true;
-        }
-
-      }
-      else{mouseDown = false;} //Ok its ok to spawn now
-
-      for (int i =0; i< enemyNum; i++ ){  //for loop for every enemy
-          Enemy[i].move();  //wow so clean
-        }
-      if(Tower[0].getReloadTime()>=1){
-          Tower[0].setReloadTime(1);  //decrements reloadtime by 1
-        }
-
-      //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
-        towershoot(Enemy[0],Tower[0]); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
-
-        window.clear();
-      for (int i =0; i< enemyNum; i++ ){
-        if(Enemy[i].getAlive()){
-          window.draw(Enemy[i].getShape());
-          window.draw(Enemy[i].getHealthBarShape());
-
+    _window.setFramerateLimit(60);                 //keeps framerate at 60
+    while(!quit){
+      switch (state){
+          case Menu: {
+            MenuLoop(_window,state);
+          }
+          case Game:{
+            gameLoop(_window,state);
+          }
+          case Exit: {
+            quit = true;
+          }
         }
       }
-        window.draw(Tower[0].getRangeShape());
-        window.draw(Tower[0].getShape());
-        window.draw(Tower[0].getBulletShape());
 
-        window.display();
-        std::cout << time1.asMilliseconds() << std::endl;
-        clock.restart();
-    }
-}
       return 0;
 }
+
+
+void MenuLoop(sf::RenderWindow& win,gameState& state){ //handles beginning menu loop and maybe pause screen for now hit enter to move on
+  int quit(0);
+    sf::Event event;
+  while (state == Menu){
+
+
+    while (win.pollEvent(event)) {
+        if (event.type == sf::Event::Closed){
+            win.close();
+            state = Exit;
+          }
+    }
+    sf::RectangleShape box;
+    win.clear();
+    win.draw(box);
+    win.display();
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
+      state = Game;
+    }
+
+  }
+}
+void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game loop, now all objects are created locally in game loop method
+
+  int xPosT(300),yPosT(300-100); //starting tower position
+    std::vector<nTower> Tower;
+  //nTower Tower(xPosT, yPosT); //creating vector tower
+  Tower.push_back(nTower(xPosT, yPosT)); //add one tower to the vector
+
+
+
+
+  //sf::RectangleShape Enemy;                   //Enemy Setup
+  int enemyNum(0);
+  int xPosE(0),yPosE(300);   //enemy initial position
+  std::vector<nEnemy> Enemy;
+  Enemy.push_back(nEnemy(xPosE, yPosE+10)); //add one enemy to the vector
+  enemyNum+=1;
+
+
+
+  //temporary stuff
+  sf::Vector2i mousePos;
+  bool mouseDown = false; //Just using to stop spawning so many enemies
+
+      sf::Clock clock;
+
+  while (window.isOpen())
+  {
+          sf::Time time1 = clock.getElapsedTime();  //time for measuring elapsed times
+          sf::Event event;
+
+          while (window.pollEvent(event)) {
+              if (event.type == sf::Event::Closed)
+                  window.close();
+                  state = Exit;
+
+          }
+
+      if (time1.asSeconds() >= .01){  //timer I dont know if we still need this
+
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
+          if (!mouseDown){ //don't spam enemies
+            mousePos = sf::Mouse::getPosition(window);
+            //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
+            Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
+            enemyNum += 1;
+            std::cout << enemyNum << std::endl;
+            mouseDown = true;
+          }
+
+        }
+        else{mouseDown = false;} //Ok its ok to spawn now
+
+        for (int i =0; i< enemyNum; i++ ){  //for loop for every enemy
+            Enemy[i].move();  //wow so clean
+          }
+        if(Tower[0].getReloadTime()>=1){
+            Tower[0].setReloadTime(1);  //decrements reloadtime by 1
+          }
+
+        //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
+          towershoot(Enemy[0],Tower[0]); //maybe two functions, one that picks a list of towers/enemys to shoot and another that actually shoots
+
+          window.clear();
+        for (int i =0; i< enemyNum; i++ ){
+          if(Enemy[i].getAlive()){
+            window.draw(Enemy[i].getShape());
+            window.draw(Enemy[i].getHealthBarShape());
+
+          }
+        }
+          window.draw(Tower[0].getRangeShape());
+          window.draw(Tower[0].getShape());
+          window.draw(Tower[0].getBulletShape());
+
+          window.display();
+
+          clock.restart();
+      }
+  }
+}
+
 
 void addEnemy(std::vector<nEnemy>& Enemy, int& enemyNum){
 
 }
+
 void towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target
 //placeholder blink animation
   if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
 //sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
 //Tower.setFillColor(sf::Color(176,213,217));
 //Enemy.setFillColor(sf::Color(255,127,127));
-    if(!tower.getShooting()){
+    if(!tower.getShooting()){   //currently only shoots if enemy is below tower?
       sf::Vector2f targetLocation = enemy.getPosition(); //for now, just where the enemy is
 
       sf::Vector2f direction = targetLocation - tower.getPosition();
@@ -167,11 +213,7 @@ void towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably
       }
     }
   }
-// if (blinktime >=5){
-// Tower.setFillColor(sf::Color::Blue);
-// Enemy.setFillColor(sf::Color::Red);
-// blinktime = 0;
-// }
+
 
 
 if (tower.getShooting()){ //bullet is currently moving, continue to move bullet
@@ -185,14 +227,3 @@ if (tower.getShooting()){ //bullet is currently moving, continue to move bullet
 }
 
 }
-
-
-/*
-void drawScreen(nEnemy& enemy, nTower& tower){ //function call to handle updating and drawing objects on the screen
-  window.clear();
-  window.draw(enemy.getShape());
-  window.draw(enemy.getHealthBarShape());
-  window.draw(tower.getShape());
-  window.draw(tower.getBulletShape());
-}
-*/

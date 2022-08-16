@@ -1,6 +1,6 @@
 #include "Tower.h"
 #include <cmath>
-#include "Enemy.cpp"
+
 
 nTower::nTower(int posX, int posY){
     position.x = posX;
