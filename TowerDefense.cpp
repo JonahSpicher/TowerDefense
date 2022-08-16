@@ -21,10 +21,10 @@
     Enemy health                             DONE
         Health Bar?                         DONE
     Add another Path
-    Add tower placement
+    Add tower placement                     IN PROGRESS?
     Tower menu
     multiple towers at once
-        towershoot loops through each tower and picks target  DONE
+        towershoot loops through each tower and picks target
     **CLASSIFY towers                     DONE
     and enemies                           DONE!
     more than one enemy - tower shoots closest DONE
@@ -42,6 +42,7 @@
   BUGS:
     Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target
     Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
+      Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though 
     Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
 
     */
@@ -126,7 +127,8 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
   //temporary stuff
   sf::Vector2i mousePos;
-  bool mouseDown = false; //Just using to stop spawning so many enemies
+  bool mouseDownL = false; //Just using to stop spawning so many enemies
+  bool mouseDownR = false;
 
   sf::Clock clock;
 
@@ -146,17 +148,29 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
       if (time1.asSeconds() >= .01){  //timer I dont know if we still need this
 
 
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){
-          if (!mouseDown){ //don't spam enemies
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){ //Enemy spawning
+          if (!mouseDownL){ //don't spam enemies
             mousePos = sf::Mouse::getPosition(window);
             //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
             Enemy.push_back(nEnemy(mousePos.x,mousePos.y)); //add one enemy to the vector
             std::cout << Enemy.size() << std::endl;
-            mouseDown = true;
+            mouseDownL = true;
           }
-
         }
-        else{mouseDown = false;} //Ok its ok to spawn now
+        else{mouseDownL = false;} //Ok its ok to spawn now
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){ //Add towers
+          if (!mouseDownR){
+            mousePos = sf::Mouse::getPosition(window);
+            //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
+            Tower.push_back(nTower(mousePos.x,mousePos.y));
+            mouseDownR = true;
+          }
+        }
+        else{mouseDownR = false;}
+
+
 
         for (int i =0; i< Enemy.size(); i++ ){  //for loop for every enemy
             Enemy[i].move();  //wow so clean
@@ -164,6 +178,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
         if(Tower[0].getReloadTime()>=1){
             Tower[0].setReloadTime(1);  //decrements reloadtime by 1
           }
+
 
         //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
 
@@ -193,9 +208,11 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
           }
         }
-          window.draw(Tower[0].getRangeShape());
-          window.draw(Tower[0].getShape());
-          window.draw(Tower[0].getBulletShape());
+        for (int i=0; i<Tower.size(); i++){
+          window.draw(Tower[i].getRangeShape());
+          window.draw(Tower[i].getShape());
+          window.draw(Tower[i].getBulletShape());
+        }
 
           window.display();
 

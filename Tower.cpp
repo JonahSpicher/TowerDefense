@@ -117,7 +117,7 @@ int nTower::findTarget(std::vector<nEnemy> enemies){
       int numEnemies = enemies.size();
       if (numEnemies == 0) {return -1;}
       int i = 0;
-      while(!enemies[i].getAlive() || findDistance(enemies[i]) > range){
+      while(findDistance(enemies[i]) > range){
         i++;
         if(i == numEnemies){
           i = -1; //signal that nothing was found
