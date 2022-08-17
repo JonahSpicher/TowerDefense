@@ -5,45 +5,35 @@
 #include "Enemy.h"
 //#include "Enemy.cpp"
 /* To-Do list
-    Get render window                       DONE
-    Clock cycle                             DONE
-    Enemy move across screen                DONE
-    Make Tower                              DONE
-    Make Enemy shoot tower what no          NEVER
-        Both Blink                          DONE and then REMOVED
-        Bullet animation (snall circle)     DONE
-            Shoot at original spot          DONE
-            track future position           DONE
-            also just shoot at current position   DONE
-    Okay im skipping to classifying things cause it makes more sense
-            Tower has range                 DONE
-            tower has reloadTime            DONE
-    Enemy health                             DONE
-        Health Bar?                         DONE
-    Add another Path
+
+    Move all checks outside of towershoot, towershoot shoots
+    Move bullet handling to enemy
     Add tower placement                     IN PROGRESS?
-    Tower menu
     multiple towers at once
         towershoot loops through each tower and picks target
-    **CLASSIFY towers                     DONE
-    and enemies                           DONE!
-    more than one enemy - tower shoots closest DONE
-    Enemy death                           DONE
+
+    Add simple background texture
+    Tower menu
+    Different enemy types
+    Different tower types
+    Currency to purchase towers
+    Tower select menu charges curency
+    Tower upgrades
+    Create a Path
     Implement text files for levels
         Routes, turns, number of
         enemies and type
-    Currency to purchase towers
-    Tower select menu charges curency
-    Different enemie and tower types
-    Upgrades
 
 
 
   BUGS:
     Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target
+      - Possible fixes: move to enemies
     Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
-      Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though 
+      Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though
+        - Possible fixes: Literally no idea
     Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
+      - Possible fixes: move to enemies
 
     */
 
@@ -163,6 +153,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){ //Add towers
           if (!mouseDownR){
             mousePos = sf::Mouse::getPosition(window);
+
             //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
             Tower.push_back(nTower(mousePos.x,mousePos.y));
             mouseDownR = true;
@@ -175,9 +166,11 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
         for (int i =0; i< Enemy.size(); i++ ){  //for loop for every enemy
             Enemy[i].move();  //wow so clean
           }
-        if(Tower[0].getReloadTime()>=1){
-            Tower[0].setReloadTime(1);  //decrements reloadtime by 1
-          }
+        for (int i=0; i<Tower.size(); i++){
+          if(Tower[i].getReloadTime()>=1){
+              Tower[i].setReloadTime(1);  //decrements reloadtime by 1
+            }
+        }
 
 
         //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
@@ -238,7 +231,6 @@ bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably
       sf::Vector2f direction = targetLocation - tower.getPosition();
       float dist = sqrt(pow(direction.x,2) + pow(direction.y,2)); // gets distnace between tower and target
     //  std::cout << dist << std::endl;
-      if(dist <= tower.getRange()){ //only shoots if distance is below range
         tower.setShooting(true);
         tower.Reload();//only resets reload time when you first shoot
         tower.setBulletPosition(tower.getPosition()); //put bullet at tower position
@@ -250,7 +242,6 @@ bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably
         direction = endPos - tower.getBulletPosition();            //set new direction vector to be end position
         sf::Vector2f vel(scale*direction.x, scale*direction.y);
         tower.setBulletVel(vel);     //set bullet velocity towards the enemys end location
-      }
     }
   }
 
