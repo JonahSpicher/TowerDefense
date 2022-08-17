@@ -3,11 +3,11 @@
 #include <cmath>
 #include "Tower.h"
 #include "Enemy.h"
-//#include "Enemy.cpp"
+
 /* To-Do list
 
     Move all checks outside of towershoot, towershoot shoots
-    Move bullet handling to enemy
+    Move bullet handling to enemy - Jonah
     Add tower placement                     IN PROGRESS?
     multiple towers at once
         towershoot loops through each tower and picks target
