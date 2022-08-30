@@ -12,6 +12,7 @@ shooting = false;
     damage = 1;
     range = 200;
     targetMode = 0;
+    targetIndex = -1; //initialized at -1 I guess?
 towerShape.setFillColor(sf::Color::Blue);
 towerShape.setRadius(20);
 towerShape.setOrigin(20, 20);
@@ -72,6 +73,10 @@ int nTower::getTargetMode(){
   return targetMode;
 }
 
+int nTower::getTargetIndex(){
+  return targetIndex;
+}
+
 
 void nTower::setBulletPosition(sf::Vector2f pos){
   bulletPos = pos;
@@ -103,6 +108,10 @@ void nTower::setTargetMode(int tm){
     targetMode = tm;
 }
 
+void nTower::setTargetIndex(int ti){
+    targetIndex = ti;
+}
+
 int nTower::findDistance(nEnemy target){
   sf::Vector2f ePos = target.getPosition();
   int dist = sqrt(pow(ePos.x - position.x,2) + pow(ePos.y - position.y,2));
@@ -124,6 +133,7 @@ int nTower::findTarget(std::vector<nEnemy> enemies){
           break; //stop looking before we escape the array
         }
       }
+      targetIndex = i;
       return i;
       break;
     }
@@ -138,8 +148,14 @@ int nTower::findTarget(std::vector<nEnemy> enemies){
           smallestDist = dist;
         }
       }
-      if (smallestDist == 10000){return -1;}
-      else{return closest;}
+      if (smallestDist == 10000){
+        targetIndex = -1;
+        return -1;
+      }
+      else{
+        targetIndex = closest;
+        return closest;
+      }
     }
     default:{
       //placeholder, not sure what behavior, doesn't really matter

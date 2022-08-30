@@ -7,7 +7,7 @@
 /* To-Do list
 
     Move all checks outside of towershoot, towershoot shoots
-    Move bullet handling to enemy - Jonah
+    Move bullet handling to enemy - Cancelled
     Add tower placement                     IN PROGRESS?
     multiple towers at once
         towershoot loops through each tower and picks target
@@ -34,6 +34,8 @@
         - Possible fixes: Literally no idea
     Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
       - Possible fixes: move to enemies
+    When placing a new tower, it shoots once and then stops
+      - Possible fixes: Maybe somewhere, its only calling Tower[0] still
 
     */
 
@@ -186,6 +188,11 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
               std::cout << "Fired at:" << std::endl;
               std::cout << target << std::endl;
               Enemy.erase(Enemy.begin()+target);
+              for (int j=0; j<Tower.size(); j++){
+                if (Tower[j].getTargetIndex() > target){
+                  Tower[j].setTargetIndex(target-1);
+                }
+              }
 
               std::cout << Enemy.size() << std::endl;
             }
@@ -251,10 +258,16 @@ if (tower.getShooting()){ //bullet is currently moving, continue to move bullet
   tower.moveBullet(); //moves bullet by bulletVelocity
   tower.setShootTime(tower.getShootTime()-1); //number of frames the bullet will take to hit the target goes down by one
   if (tower.getShootTime() == 0){ //bullet has hit the enemy
-    tower.setBulletPosition(sf::Vector2f(1000, 1000));
-    tower.setShooting(false);
-    bool death = enemy.takeDamage(tower.getDamage());
+    bool death = false;
 
+    if (tower.findDistance(enemy) <= tower.getRange()){
+
+      tower.setBulletPosition(sf::Vector2f(1000, 1000));
+      tower.setShooting(false);
+      death = enemy.takeDamage(tower.getDamage());
+    }
+
+    tower.setTargetIndex(-1);
     return death;
   }
 }
