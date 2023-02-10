@@ -31,6 +31,8 @@
       - Possible fixes: move to enemies
     Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
       Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though
+      Also this isn't totally true, right now the first tower doesn't shoot consistently either and sometimes new ones do shoot a few times
+      before stopping. ahhhhhhhhhh
         - Possible fixes: Literally no idea
     Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
       - Possible fixes: move to enemies
@@ -46,7 +48,7 @@ void MenuLoop(sf::RenderWindow& win, gameState&  state);
 void gameLoop(sf::RenderWindow& window, gameState& state);
    bool towershoot(nEnemy& enemy, nTower& tower);  //function for tower shooting enemy
    void addEnemy(std::vector<nEnemy>& Enemy);
-
+MenuLoop
 
 
 int main(){
