@@ -118,7 +118,7 @@ int nTower::findDistance(nEnemy target){
   return dist;
 }
 
-int nTower::findTarget(std::vector<nEnemy> enemies){
+int nTower::findTarget(std::vector<nEnemy> enemies){ //returns target index if there is a target within range, otherwise -1
 
   switch(targetMode){
     case 0: {//target enemy that showed up first
@@ -139,7 +139,7 @@ int nTower::findTarget(std::vector<nEnemy> enemies){
     }
     case 1: { //Shoot the enemy thats closest to the tower
       int numEnemies = enemies.size();
-      int smallestDist = 10000;
+      int smallestDist = 10000; 
       int closest = 0;
       for (int i=0; i<numEnemies; i++){
         int dist = findDistance(enemies[i]);
@@ -148,7 +148,7 @@ int nTower::findTarget(std::vector<nEnemy> enemies){
           smallestDist = dist;
         }
       }
-      if (smallestDist == 10000){
+      if (smallestDist == 10000){ //no enemy is in range
         targetIndex = -1;
         return -1;
       }

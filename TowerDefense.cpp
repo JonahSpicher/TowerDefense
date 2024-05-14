@@ -8,17 +8,28 @@
 
     Move all checks outside of towershoot, towershoot shoots
     Move bullet handling to enemy - Cancelled
-    Add tower placement                     IN PROGRESS?
-    multiple towers at once
-        towershoot loops through each tower and picks target
+    Add tower placement                                      IN PROGRESS?  DONE
+    multiple towers at once                                               DONE
+        towershoot loops through each tower and picks target              
+    
 
+    Towers:
+      Tower shooting modes
+      Different tower types
+      Currency to purchase towers
+      Tower select menu charges curency
+      Tower upgrades
+
+    Enemies:
+      Make sure we are properly deleting when killed (currently erasing from vector and moving offscreen) --actually after some research it seems like this is exactly correct
+          Different enemy types
+
+    Graphics:
     Add simple background texture
+    Add simple Enemy and Tower sprites
     Tower menu
-    Different enemy types
-    Different tower types
-    Currency to purchase towers
-    Tower select menu charges curency
-    Tower upgrades
+
+    
     Create a Path
     Implement text files for levels
         Routes, turns, number of
@@ -27,17 +38,23 @@
 
 
   BUGS:
-    Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target
+   1. Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target
       - Possible fixes: move to enemies
-    Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
-      Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though
+    2. Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
+        I saw this happen when the tower "missed" the bullet didnt hit anything and went off screen, and the tower never shot again
+        Except now it happens when you start the game
+        Possible Fixes: This is scary but maybe erasing bullets and enemies and everything on quit? not sure if that could affect the next game launch 
+
+      Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though -- I cant replicate this
       Also this isn't totally true, right now the first tower doesn't shoot consistently either and sometimes new ones do shoot a few times
       before stopping. ahhhhhhhhhh
-        - Possible fixes: Literally no idea
+        - Possible fixes: Literally no idea 
+        - I think fixing known bullet bugs may also fix this
     Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
       - Possible fixes: move to enemies
     When placing a new tower, it shoots once and then stops
-      - Possible fixes: Maybe somewhere, its only calling Tower[0] still
+      - Possible fixes: Maybe somewhere, its only calling Tower[0] still --is this fixed? not happening anymore
+
 
     */
 
@@ -71,6 +88,7 @@ sf::RenderWindow _window(sf::VideoMode(winWidth, winHeight), "More Lines");
             gameLoop(_window,state);
           }
           case Exit: {
+         
             quit = true;
           }
         }
@@ -123,7 +141,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
   sf::Vector2i mousePos;
   bool mouseDownL = false; //Just using to stop spawning so many enemies
   bool mouseDownR = false;
-
+ int target = -1; //initalize target
   sf::Clock clock;
 
   while (window.isOpen())
@@ -134,6 +152,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           while (window.pollEvent(event)) {
               if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
                   window.close();
+
                   state = Exit;
 
 
@@ -178,19 +197,20 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
 
         //currently called every frame to shoot bullet and also move bullet to the enemy and wait for reload
-
+       
         for(int i=0; i<Tower.size(); i++){ //For each tower:
           //Tower[i].setTargetMode(1); //Optional, shoot closest instead of Oldest
-
-          int target = Tower[i].findTarget(Enemy); //Figure out which one you should shoot
+          if(!Tower[i].getShooting()){ //only find a new target if the bullet isnt moving
+           target = Tower[i].findTarget(Enemy); //Figure out which one you should shoot
+          }
           //std::cout << "Made it" << std::endl;
           if(target>=0){
             bool death = towershoot(Enemy[target],Tower[i]); //Shoot it, i think returns true if it kills enemy?
             if(death){
               std::cout << "Fired at:" << std::endl;
               std::cout << target << std::endl;
-              Enemy.erase(Enemy.begin()+target);
-              for (int j=0; j<Tower.size(); j++){   /*do we know what this does?*/
+              Enemy.erase(Enemy.begin()+target);    //need to find out if this calls deconstructor for shape? We want to delete properly
+              for (int j=0; j<Tower.size(); j++){   /*do we know what this does?     i think it decreases the traget by one if the target is destroyed, not sure this is necesary*/
                 if (Tower[j].getTargetIndex() > target){
                   Tower[j].setTargetIndex(target-1);
                 }
@@ -223,6 +243,9 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           clock.restart();
       }
   }
+  std::cout << "exiting Game loop";
+  Tower.clear();
+  Enemy.clear();
 }
 
 
@@ -230,17 +253,18 @@ void addEnemy(std::vector<nEnemy>& Enemy){ /*not currently used*/
 
 }
 
-bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target, or now every tower calls it in main loop
+bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target, or now every tower calls it in main loop when it has a target
 //placeholder blink animation
   if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
 //sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
 //Tower.setFillColor(sf::Color(176,213,217));
 //Enemy.setFillColor(sf::Color(255,127,127));
-    if(!tower.getShooting()){   //BUG:: currently only shoots if enemy is below tower?
+//BUG:: currently only shoots if enemy is below tower? -haavent seen this
+    if(!tower.getShooting()){    //bullet is not currently moving
       sf::Vector2f targetLocation = enemy.getPosition(); //for now, just where the enemy is
 
       sf::Vector2f direction = targetLocation - tower.getPosition();
-      float dist = sqrt(pow(direction.x,2) + pow(direction.y,2)); // gets distnace between tower and target
+      float dist = sqrt(pow(direction.x,2) + pow(direction.y,2)); // gets distnace between tower and target --we have a function for this?
     //  std::cout << dist << std::endl;
         tower.setShooting(true);
         tower.Reload();//only resets reload time when you first shoot
@@ -258,18 +282,18 @@ bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably
 
 
 
-if (tower.getShooting()){ //bullet is currently moving, continue to move bullet
+if (tower.getShooting()){ //bullet is currently moving, continue to move bullet - right now it stops if towershoot isnt called (when enemy moves outside of range)
   tower.moveBullet(); //moves bullet by bulletVelocity
   tower.setShootTime(tower.getShootTime()-1); //number of frames the bullet will take to hit the target goes down by one
   if (tower.getShootTime() == 0){ //bullet has hit the enemy
     bool death = false;
 
-    if (tower.findDistance(enemy) <= tower.getRange()){
+   // if (tower.findDistance(enemy) <= tower.getRange()){ //iff bullet hit enemy and enemy is in range, move bullet far away and deal damage. im going to remove range check
 
       tower.setBulletPosition(sf::Vector2f(1000, 1000));
       tower.setShooting(false);
       death = enemy.takeDamage(tower.getDamage());
-    }
+   // }
 
     tower.setTargetIndex(-1);
     return death;

@@ -41,8 +41,8 @@ bool nEnemy::takeDamage(int damage){ //takes in damage variable from tower
 void nEnemy::die(){
   isAlive = false;
   
-  //enemyShape.setFillColor(sf::Color::Black); //probably should do more things
-  setPosition(sf::Vector2f(1000,1000));
+  //enemyShape.setFillColor(sf::Color::Black); //probably should do more things --deleted in TowerDefense.cpp
+  setPosition(sf::Vector2f(1,1)); //set to 1 1 for testing purposes
   velocity = sf::Vector2f(0,0);
   //move();
 }

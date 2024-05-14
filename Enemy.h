@@ -17,15 +17,15 @@ private:   //all variables that are characteristics of the enemy
 public:
     nEnemy(int posX, int posY);
     void move(); //adds velocity to position and sets position of the shape
-    sf::RectangleShape getShape();
-    sf::RectangleShape getHealthBarShape();
+    sf::RectangleShape getShape(); //returns shape for drawing
+    sf::RectangleShape getHealthBarShape(); //return health shape for drawing
     sf::Vector2f getPosition();
     sf::Vector2f getVelocity();
-    int getHealth();
+    int getHealth(); //doesnt exist?
     bool getAlive();
     void setPosition(sf::Vector2f newLoc);
     bool takeDamage(int damage);//takes in damage from tower and subtracts from health, calls die function if health is 0
-    void die();
+    void die(); //
 
 
 };
