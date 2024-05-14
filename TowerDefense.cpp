@@ -48,10 +48,10 @@ void MenuLoop(sf::RenderWindow& win, gameState&  state);
 void gameLoop(sf::RenderWindow& window, gameState& state);
    bool towershoot(nEnemy& enemy, nTower& tower);  //function for tower shooting enemy
    void addEnemy(std::vector<nEnemy>& Enemy);
-MenuLoop
+//MenuLoop //what is this
 
 
-int main(){
+int main(){ 
 gameState state = Menu; //start with menu
 
 int winHeight = 600;
@@ -105,7 +105,7 @@ void MenuLoop(sf::RenderWindow& win,gameState& state){ //handles beginning menu 
 void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game loop, now all objects are created locally in game loop method
 
   int xPosT(300),yPosT(300-100); //starting tower position
-    std::vector<nTower> Tower;
+    std::vector<nTower> Tower; //vector of type nTower (from tower.h)
   //nTower Tower(xPosT, yPosT); //creating vector tower
   Tower.push_back(nTower(xPosT, yPosT)); //add one tower to the vector
 
@@ -143,7 +143,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
 
 
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){ //Enemy spawning
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)){ //Enemy spawning -should move to addenemy function
           if (!mouseDownL){ //don't spam enemies
             mousePos = sf::Mouse::getPosition(window);
             //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
@@ -154,7 +154,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
         }
         else{mouseDownL = false;} //Ok its ok to spawn now
 
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){ //Add towers
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)){ //Add towers - probably should make function
           if (!mouseDownR){
             mousePos = sf::Mouse::getPosition(window);
 
@@ -185,12 +185,12 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           int target = Tower[i].findTarget(Enemy); //Figure out which one you should shoot
           //std::cout << "Made it" << std::endl;
           if(target>=0){
-            bool death = towershoot(Enemy[target],Tower[i]); //Shoot it
+            bool death = towershoot(Enemy[target],Tower[i]); //Shoot it, i think returns true if it kills enemy?
             if(death){
               std::cout << "Fired at:" << std::endl;
               std::cout << target << std::endl;
               Enemy.erase(Enemy.begin()+target);
-              for (int j=0; j<Tower.size(); j++){
+              for (int j=0; j<Tower.size(); j++){   /*do we know what this does?*/
                 if (Tower[j].getTargetIndex() > target){
                   Tower[j].setTargetIndex(target-1);
                 }
@@ -201,8 +201,10 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           }
         }
 
+          //End of every-frame logic
+
           window.clear();
-        for (int i =0; i< Enemy.size(); i++ ){
+        for (int i =0; i< Enemy.size(); i++ ){ //draw alive enemies and health bars
 
           if(Enemy[i].getAlive()){
             window.draw(Enemy[i].getShape());
@@ -210,7 +212,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
           }
         }
-        for (int i=0; i<Tower.size(); i++){
+        for (int i=0; i<Tower.size(); i++){ //draw all towers and bullets
           window.draw(Tower[i].getRangeShape());
           window.draw(Tower[i].getShape());
           window.draw(Tower[i].getBulletShape());
@@ -224,17 +226,17 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 }
 
 
-void addEnemy(std::vector<nEnemy>& Enemy){
+void addEnemy(std::vector<nEnemy>& Enemy){ /*not currently used*/
 
 }
 
-bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target
+bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target, or now every tower calls it in main loop
 //placeholder blink animation
   if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
 //sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
 //Tower.setFillColor(sf::Color(176,213,217));
 //Enemy.setFillColor(sf::Color(255,127,127));
-    if(!tower.getShooting()){   //currently only shoots if enemy is below tower?
+    if(!tower.getShooting()){   //BUG:: currently only shoots if enemy is below tower?
       sf::Vector2f targetLocation = enemy.getPosition(); //for now, just where the enemy is
 
       sf::Vector2f direction = targetLocation - tower.getPosition();
