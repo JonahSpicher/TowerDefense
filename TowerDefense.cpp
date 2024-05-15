@@ -38,11 +38,11 @@
 
 
   BUGS:
-   1. Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target
+   1. Bullet freezes when enemies leave range - keeps moving on initial path when they re-enter, does damage when it gets to original target ---FIXED
       - Possible fixes: move to enemies
     2. Sometimes the tower refuses to shoot? Have seen it shoot at the start and stop when towers are added, probably an issue with targeting. BAD
         I saw this happen when the tower "missed" the bullet didnt hit anything and went off screen, and the tower never shot again
-        Except now it happens when you start the game
+        Except now it happens when you start the game, seemingly radnomly either works fine or doesnt at all. 
         Possible Fixes: This is scary but maybe erasing bullets and enemies and everything on quit? not sure if that could affect the next game launch 
 
       Also, new towers only seem to shoot once. Original tower behavior has stayed consistent though -- I cant replicate this
@@ -52,6 +52,7 @@
         - I think fixing known bullet bugs may also fix this
     Occasionally, target will change before a bullet hits, and I believe the damage is transferred to the new target. Bullet movement should maybe be an enemy property? Also solves bullet freezing
       - Possible fixes: move to enemies
+      - With the new system of only calling findtarget when the tower is done shooting, this scenario crashes the game
     When placing a new tower, it shoots once and then stops
       - Possible fixes: Maybe somewhere, its only calling Tower[0] still --is this fixed? not happening anymore
 
@@ -201,8 +202,10 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
         for(int i=0; i<Tower.size(); i++){ //For each tower:
           //Tower[i].setTargetMode(1); //Optional, shoot closest instead of Oldest
           if(!Tower[i].getShooting()){ //only find a new target if the bullet isnt moving
-           target = Tower[i].findTarget(Enemy); //Figure out which one you should shoot
+            Tower[i].findTarget(Enemy); //Figure out which one you should shoot
           }
+            target = Tower[i].getTargetIndex();
+        //  }
           //std::cout << "Made it" << std::endl;
           if(target>=0){
             bool death = towershoot(Enemy[target],Tower[i]); //Shoot it, i think returns true if it kills enemy?
