@@ -4,6 +4,18 @@
 #include "Tower.h"
 #include "Enemy.h"
 
+#include <string>
+#include <limits.h>
+#include <unistd.h>
+
+ std::string getexepath()
+{
+  char result[ PATH_MAX ];
+  ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+  return std::string( result, (count > 0) ? count : 0 );
+}
+
+
 /* To-Do list
 
     Move all checks outside of towershoot, towershoot shoots
@@ -70,6 +82,9 @@ void gameLoop(sf::RenderWindow& window, gameState& state);
 
 
 int main(){ 
+  
+ std::cout << getexepath() << std::endl;
+
 gameState state = Menu; //start with menu
 
 int winHeight = 600;
@@ -77,20 +92,23 @@ int winWidth = 600;
 
 bool quit = false;
 sf::RenderWindow _window(sf::VideoMode(winWidth, winHeight), "More Lines");
+_window.setFramerateLimit(60);                 //keeps framerate at 60
 
-    _window.setFramerateLimit(60);                 //keeps framerate at 60
     while(!quit){
 
       switch (state){
           case Menu: {
             MenuLoop(_window,state);
+            break;
           }
           case Game:{
             gameLoop(_window,state);
+            break;
           }
           case Exit: {
          
             quit = true;
+            break;
           }
         }
       }
@@ -100,7 +118,7 @@ sf::RenderWindow _window(sf::VideoMode(winWidth, winHeight), "More Lines");
 
 
 void MenuLoop(sf::RenderWindow& win,gameState& state){ //handles beginning menu loop and maybe pause screen for now hit enter to move on
-  int quit(0);
+  //int quit(0);
     sf::Event event;
   while (state == Menu){
 
@@ -239,6 +257,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           window.draw(Tower[i].getRangeShape());
           window.draw(Tower[i].getShape());
           window.draw(Tower[i].getBulletShape());
+          window.draw(Tower[i].getTargetText());
         }
 
           window.display();

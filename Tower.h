@@ -25,6 +25,9 @@ private:   //all variables that are characteristics of the towers
     bool shooting; //checks if a bullet is currently moving
     sf::CircleShape bullet; //shape to draw bullet
     sf::CircleShape rangeShape; //shape to draw range, only want to draw if the mouse is over the tower
+    sf::Font font; //text and font to display target over tower
+    sf::Text targetText;
+   
 public:
     nTower(int posX, int posY); //constructor
     //getter functions for shape, speed and position
@@ -34,6 +37,7 @@ public:
     sf::Vector2f getBulletPosition();
       sf::Vector2f getBulletVel();
     sf::Vector2f getPosition();
+    sf::Text getTargetText() {return targetText;}
     int getShootSpeed();
     int getReloadTime();
     int getDamage();

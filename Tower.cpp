@@ -27,6 +27,20 @@ rangeShape.setFillColor(sf::Color(0,255,0,70)); //create semi transparent range 
 rangeShape.setRadius(range);
 rangeShape.setOrigin(range, range);
 rangeShape.setPosition(posX,posY); //temporary solution mayber
+
+//text stuff
+ if (!font.loadFromFile("Sono-Regular.ttf"))
+    {
+      std::cout << "Font did not load";
+    }
+    else{
+      std::cout << "font loaded?";
+    }
+  targetText.setFont(font);
+  targetText.setPosition(position);
+  targetText.setString("hey");
+  targetText.setFillColor(sf::Color::White);
+  targetText.setCharacterSize(24);
 }
 
 sf::CircleShape nTower::getShape(){
@@ -35,6 +49,7 @@ sf::CircleShape nTower::getShape(){
 sf::Vector2f nTower::getPosition(){
     return position;
 }
+
 
 int nTower::getShootSpeed(){
     return shootSpeed;
@@ -59,6 +74,7 @@ sf::Vector2f nTower::getBulletPosition(){
 sf::Vector2f nTower::getBulletVel(){
   return bulletVel;
 }
+
 int nTower::getReloadTime(){
   return currentReloadTime;
 }
