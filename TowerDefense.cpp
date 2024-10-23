@@ -85,10 +85,13 @@ int main(){
   
  std::cout << getexepath() << std::endl;
 
+
 gameState state = Menu; //start with menu
 
 int winHeight = 600;
 int winWidth = 600;
+//Menu text setup
+
 
 bool quit = false;
 sf::RenderWindow _window(sf::VideoMode(winWidth, winHeight), "More Lines");
@@ -118,8 +121,23 @@ _window.setFramerateLimit(60);                 //keeps framerate at 60
 
 
 void MenuLoop(sf::RenderWindow& win,gameState& state){ //handles beginning menu loop and maybe pause screen for now hit enter to move on
-  //int quit(0);
-    sf::Event event;
+  //Menu Setup
+  sf::Event event;
+  sf::Font font;
+ 
+if (!font.loadFromFile("..//Assets//Sono-Regular.ttf"))
+    {
+      std::cout << "Font did not load"<< std::endl;
+    }
+    else{
+      std::cout << "Menu font loaded"<< std::endl;
+    }
+  sf::Text menuText;
+  menuText.setFont(font);
+  menuText.setString("Press Enter to start");
+  menuText.setPosition(win.getSize().x/4,win.getSize().y/2);
+
+  //Menu Loop
   while (state == Menu){
 
 
@@ -129,9 +147,11 @@ void MenuLoop(sf::RenderWindow& win,gameState& state){ //handles beginning menu 
             state = Exit;
           }
     }
-    sf::RectangleShape box;
+    //sf::RectangleShape box; Not sure what this box was for, but we were calling it every single loop update so thatts gotta be bad
+   
+
     win.clear();
-    win.draw(box);
+    win.draw(menuText);
     win.display();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
       state = Game;
@@ -139,12 +159,24 @@ void MenuLoop(sf::RenderWindow& win,gameState& state){ //handles beginning menu 
 
   }
 }
-void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game loop, now all objects are created locally in game loop method
+
+
+ //handles the game loop, now all objects are created locally in game loop method
+void gameLoop(sf::RenderWindow& window,gameState& state){  
+ sf::Font font;
+ 
+if (!font.loadFromFile("..//Assets//Sono-Regular.ttf"))
+    {
+      std::cout << "Font did not load"<< std::endl;
+    }
+    else{
+      std::cout << "Menu font loaded"<< std::endl;
+    }
 
   int xPosT(300),yPosT(300-100); //starting tower position
     std::vector<nTower> Tower; //vector of type nTower (from tower.h)
   //nTower Tower(xPosT, yPosT); //creating vector tower
-  Tower.push_back(nTower(xPosT, yPosT)); //add one tower to the vector
+  Tower.push_back(nTower(xPosT, yPosT,font)); //add one tower to the vector, not sure how to get font to work without passing it
 
 
 
@@ -177,7 +209,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
 
           }
 
-      if (time1.asSeconds() >= .01){  //timer I dont know if we still need this
+      //if (time1.asSeconds() >= .01){  //timer I dont know if we still need this
 
 
 
@@ -197,7 +229,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
             mousePos = sf::Mouse::getPosition(window);
 
             //std::cout << mousePos.x << "   " <<mousePos.y << std::endl;
-            Tower.push_back(nTower(mousePos.x,mousePos.y));
+            Tower.push_back(nTower(mousePos.x,mousePos.y,font));
             mouseDownR = true;
           }
         }
@@ -223,12 +255,13 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
             Tower[i].findTarget(Enemy); //Figure out which one you should shoot
           }
             target = Tower[i].getTargetIndex();
+            Tower[i].SetTargetText(target);
         //  }
           //std::cout << "Made it" << std::endl;
           if(target>=0){
             bool death = towershoot(Enemy[target],Tower[i]); //Shoot it, i think returns true if it kills enemy?
             if(death){
-              std::cout << "Fired at:" << std::endl;
+              std::cout << "Killed:" << std::endl;
               std::cout << target << std::endl;
               Enemy.erase(Enemy.begin()+target);    //need to find out if this calls deconstructor for shape? We want to delete properly
               for (int j=0; j<Tower.size(); j++){   /*do we know what this does?     i think it decreases the traget by one if the target is destroyed, not sure this is necesary*/
@@ -237,7 +270,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
                 }
               }
 
-              std::cout << Enemy.size() << std::endl;
+              std::cout << Enemy.size() << std::endl; // prints the size of the enemy vector after an enemy dies
             }
           }
         }
@@ -263,7 +296,7 @@ void gameLoop(sf::RenderWindow& window,gameState& state){   //handles the game l
           window.display();
 
           clock.restart();
-      }
+      //}
   }
   std::cout << "exiting Game loop";
   Tower.clear();

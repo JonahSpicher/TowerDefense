@@ -18,7 +18,7 @@ public:
     nEnemy(int posX, int posY);
     void move(); //adds velocity to position and sets position of the shape
     sf::RectangleShape getShape(); //returns shape for drawing
-    sf::RectangleShape getHealthBarShape(); //return health shape for drawing
+    sf::RectangleShape getHealthBarShape() {return enemyHealthBar;}; //return health shape for drawing
     sf::Vector2f getPosition();
     sf::Vector2f getVelocity();
     int getHealth(); //doesnt exist?

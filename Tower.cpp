@@ -2,10 +2,10 @@
 #include <cmath>
 
 
-nTower::nTower(int posX, int posY){
+nTower::nTower(int posX, int posY, sf::Font& font){
     position.x = posX;
     position.y = posY;
-shooting = false;
+    shooting = false;
     //properties of the tower will eventually be set by a towerType variable passed in the constructor
     shootSpeed = 15;
     reloadTime = 30;
@@ -29,18 +29,21 @@ rangeShape.setOrigin(range, range);
 rangeShape.setPosition(posX,posY); //temporary solution mayber
 
 //text stuff
- if (!font.loadFromFile("Sono-Regular.ttf"))
+ //sf::Font font; moving this here caused a seg fault and makes it crash
+ /*
+ if (!font.loadFromFile("..//Assets//Sono-Regular.ttf"))
     {
-      std::cout << "Font did not load";
+      std::cout << "Font did not load" << std::endl;
     }
     else{
-      std::cout << "font loaded?";
-    }
+      std::cout << "Tower font loaded?"<< std::endl;
+    */
   targetText.setFont(font);
-  targetText.setPosition(position);
-  targetText.setString("hey");
-  targetText.setFillColor(sf::Color::White);
-  targetText.setCharacterSize(24);
+  targetText.setString(std::to_string(targetIndex));
+  targetText.setPosition(position.x,position.y+15);
+  
+  //targetText.setFillColor(sf::Color::White);
+  //targetText.setCharacterSize(24);
 }
 
 sf::CircleShape nTower::getShape(){
@@ -48,6 +51,7 @@ sf::CircleShape nTower::getShape(){
 }
 sf::Vector2f nTower::getPosition(){
     return position;
+    
 }
 
 
@@ -177,7 +181,13 @@ int nTower::findTarget(std::vector<nEnemy> enemies){ //returns target index if t
       //placeholder, not sure what behavior, doesn't really matter
       return 0;
     }
-
+  
+  
   }
 
+}
+
+void nTower::SetTargetText(int targetIndex){
+    targetText.setString(std::to_string(targetIndex));
+    
 }

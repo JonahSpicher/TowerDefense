@@ -50,9 +50,7 @@ void nEnemy::die(){
 sf::RectangleShape nEnemy::getShape(){
     return enemyShape;
 }
-sf::RectangleShape nEnemy::getHealthBarShape(){
-  return enemyHealthBar;
-}
+
 
 sf::Vector2f nEnemy::getPosition(){
     return position;

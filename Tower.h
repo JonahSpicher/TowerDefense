@@ -2,6 +2,7 @@
 #define TOWER_H
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <string>
 #include "Enemy.h"
 
 //class nEnemy;
@@ -25,11 +26,11 @@ private:   //all variables that are characteristics of the towers
     bool shooting; //checks if a bullet is currently moving
     sf::CircleShape bullet; //shape to draw bullet
     sf::CircleShape rangeShape; //shape to draw range, only want to draw if the mouse is over the tower
-    sf::Font font; //text and font to display target over tower
+    //sf::Font font; //text and font to display target over tower
     sf::Text targetText;
    
 public:
-    nTower(int posX, int posY); //constructor
+    nTower(int posX, int posY, sf::Font& font); //constructor
     //getter functions for shape, speed and position
     sf::CircleShape getShape();
     sf::CircleShape getBulletShape();
@@ -55,7 +56,7 @@ public:
     void setShootTime(int s);
     void setTargetMode(int tm);
     void setTargetIndex(int ti);
-
+    void SetTargetText(int targetIndex);
     void Reload(); //sets current reload time to tower reloadTime
     int findTarget(std::vector<nEnemy> enemies); //Given enemies, returns index of chosen target
     int findDistance(nEnemy target); //Checks how far away an enemy is
