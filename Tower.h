@@ -60,5 +60,6 @@ public:
     void Reload(); //sets current reload time to tower reloadTime
     int findTarget(std::vector<nEnemy> enemies); //Given enemies, returns index of chosen target
     int findDistance(nEnemy target); //Checks how far away an enemy is
+    bool BulletCollision(nEnemy target); //checks if bullet collided
 };
 #endif

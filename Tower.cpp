@@ -132,12 +132,21 @@ void nTower::setTargetIndex(int ti){
     targetIndex = ti;
 }
 
-int nTower::findDistance(nEnemy target){
+int nTower::findDistance(nEnemy target){ //distance between tower and enemy
   sf::Vector2f ePos = target.getPosition();
   int dist = sqrt(pow(ePos.x - position.x,2) + pow(ePos.y - position.y,2));
   return dist;
 }
 
+bool nTower::BulletCollision(nEnemy target){ //distance between bullet and enemy
+  sf::Vector2f ePos = target.getPosition();
+  int dist = sqrt(pow(ePos.x - bulletPos.x,2) + pow(ePos.y - bulletPos.y,2));
+  if (dist <= target.getShape().getSize().x){
+    return true;
+  }
+  else
+  return false;
+}
 int nTower::findTarget(std::vector<nEnemy> enemies){ //returns target index if there is a target within range, otherwise -1
 
   switch(targetMode){

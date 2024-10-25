@@ -251,7 +251,7 @@ if (!font.loadFromFile("..//Assets//Sono-Regular.ttf"))
        
         for(int i=0; i<Tower.size(); i++){ //For each tower:
           //Tower[i].setTargetMode(1); //Optional, shoot closest instead of Oldest
-          if(!Tower[i].getShooting()){ //only find a new target if the bullet isnt moving
+          if(!Tower[i].getShooting()){ //only find a new target if the bullet isnt moving ---Is this neccesary? 
             Tower[i].findTarget(Enemy); //Figure out which one you should shoot
           }
             target = Tower[i].getTargetIndex();
@@ -261,7 +261,7 @@ if (!font.loadFromFile("..//Assets//Sono-Regular.ttf"))
           if(target>=0){
             bool death = towershoot(Enemy[target],Tower[i]); //Shoot it, i think returns true if it kills enemy?
             if(death){
-              std::cout << "Killed:" << std::endl;
+              std::cout << "Killed: ";
               std::cout << target << std::endl;
               Enemy.erase(Enemy.begin()+target);    //need to find out if this calls deconstructor for shape? We want to delete properly
               for (int j=0; j<Tower.size(); j++){   /*do we know what this does?     i think it decreases the traget by one if the target is destroyed, not sure this is necesary*/
@@ -270,7 +270,7 @@ if (!font.loadFromFile("..//Assets//Sono-Regular.ttf"))
                 }
               }
 
-              std::cout << Enemy.size() << std::endl; // prints the size of the enemy vector after an enemy dies
+              std::cout << "Number of enemies: " << Enemy.size() << std::endl; // prints the size of the enemy vector after an enemy dies
             }
           }
         }
@@ -308,11 +308,11 @@ void addEnemy(std::vector<nEnemy>& Enemy){ /*not currently used*/
 
 }
 
-bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target, or now every tower calls it in main loop when it has a target
+bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably loop through every tower and each will pick a target, for now every tower calls it in main loop when it has a target
 //placeholder blink animation
   if (tower.getReloadTime()<=0){    //tower tries to shoot automatically when reloaded
 //sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&    //temporary towershoot trigger
-//Tower.setFillColor(sf::Color(176,213,217));
+tower.getShape().setFillColor(sf::Color(176,213,217));
 //Enemy.setFillColor(sf::Color(255,127,127));
 //BUG:: currently only shoots if enemy is below tower? -haavent seen this
     if(!tower.getShooting()){    //bullet is not currently moving
@@ -336,11 +336,11 @@ bool towershoot(nEnemy& enemy, nTower& tower){   //Eventually this will probably
   }
 
 
-
+//this is where the shooting a dead enemy bug is, we could fix by adding a "just killed" variable that stores the index of the most recently killed enemy, and when the bullet i moving it checks that the target was not just killed
 if (tower.getShooting()){ //bullet is currently moving, continue to move bullet - right now it stops if towershoot isnt called (when enemy moves outside of range)
   tower.moveBullet(); //moves bullet by bulletVelocity
   tower.setShootTime(tower.getShootTime()-1); //number of frames the bullet will take to hit the target goes down by one
-  if (tower.getShootTime() == 0){ //bullet has hit the enemy
+  if (tower.getShootTime() == 0 && tower.BulletCollision(enemy)){ //bullet has hit the enemy.. Im adding an and for the bullet touching enemy, if its already dead, then dont return death again
     bool death = false;
 
    // if (tower.findDistance(enemy) <= tower.getRange()){ //iff bullet hit enemy and enemy is in range, move bullet far away and deal damage. im going to remove range check
